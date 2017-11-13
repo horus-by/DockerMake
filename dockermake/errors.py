@@ -13,9 +13,14 @@ from __future__ import print_function
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from io import StringIO
 import pprint
+import sys
 from termcolor import cprint
+
+if sys.version_info.major == 2:
+    from io import BytesIO as StringIO
+else:
+    from io import StringIO
 
 class UserException(Exception):
     """
@@ -82,10 +87,10 @@ class BuildError(Exception):
             print(dockerfile, file=dff)
         with StringIO() as stream:
             cprint('Docker build failure', 'red', attrs=['bold'], file=stream)
-            print(u'\n   -------- Docker daemon output --------', file=stream)
+            print('\n   -------- Docker daemon output --------', file=stream)
             pprint.pprint(item, stream, indent=4)
-            print(u'   -------- Arguments to client.build --------', file=stream)
+            print('   -------- Arguments to client.build --------', file=stream)
             pprint.pprint(build_args, stream, indent=4)
-            print(u'This dockerfile was written to dockerfile.fail', file=stream)
+            print('This dockerfile was written to dockerfile.fail', file=stream)
             stream.seek(0)
             super(BuildError, self).__init__(stream.read())
